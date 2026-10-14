@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-import { API_CONFIG } from '../../config/api.config';
+import { API_CONFIG } from '@/config/api.config';
 
-import Input from '../UI/Input/Input';
-import Button from '../UI/Button/Button';
+import Input from '@/components/UI/Input/Input';
+import Button from '@/components/UI/Button/Button';
 import {
   INSTANSE_STATE_TYPE,
   INSTANSE_STATE_MESSAGE,
