@@ -1,0 +1,73 @@
+/* Input.css (Tailwind CSS v4 + Native Nesting) */
+
+.input-container {
+  --input-primary-color: var(--color-gray-400);
+
+  position: relative;
+  padding-top: calc(var(--spacing) * 4);
+
+  .input-label {
+    position: absolute;
+    top: calc(var(--spacing) * 2);
+    left: calc(var(--spacing) * 2);
+    z-index: 10;
+    padding-left: var(--spacing) ;
+    padding-right: var(--spacing) ;
+    display: block;
+    background-color: var(--color-white);
+    font-size: var(--text-xs);
+    color: var(--input-primary-color);
+    transition: color 0.2s ease;
+  }
+
+  .input {
+    width: 100%;
+    border: 1px solid var(--input-primary-color);
+    border-radius: var(--radius-2xl);
+    padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 4);
+    font-size: var(--text-sm);
+    outline: none;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: var(--color-gray-300);
+    }
+
+    /* Состояние фокуса в нормальном режиме */
+    &:focus {
+      box-shadow: 0 0 0 2px var(--blue, var(--color-blue-400));
+      border-color: transparent;
+    }
+
+    /* Состояние disabled */
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  /* === Управление состояниями через дата-атрибуты родителя === */
+
+  /* Состояние ошибки (invalid) — наивысший приоритет */
+  &[data-invalid="true"] {
+    .input-label {
+      color: var(--alert, var(--color-red-500));
+    }
+
+    .input {
+      border-color: var(--alert, var(--color-red-500));
+
+      &:focus {
+        box-shadow: 0 0 0 2px var(--alert, var(--color-red-500));
+        border-color: transparent;
+      }
+    }
+  }
+
+  /* Состояние фокуса (работает, только если нет ошибки) */
+  &[data-focused="true"]:not([data-invalid="true"]) {
+    .input-label {
+      color: var(--blue, var(--color-blue-500));
+    }
+  }
+}

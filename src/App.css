@@ -1,0 +1,32 @@
+.tg-bg {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: radial-gradient(circle at 15% 15%, #d0d68c, #8cba85, #b8cca8);
+}
+
+/* Изолированный слой для паттерна */
+.tg-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("./assets/tg-pattern.svg");
+  background-size: 500px;
+  background-repeat: repeat;
+
+  opacity: 0.20;
+  mix-blend-mode: overlay;
+
+  pointer-events: none;
+}
+
+/* Слой чтобы он всегда был сверху фона */
+.tg-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
