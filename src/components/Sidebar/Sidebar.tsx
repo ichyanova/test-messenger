@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react';
 import Input from '@/components/UI/Input/Input';
+import type { ChatInfo } from '@/components/Main/Main.types';
+import ChatList from './ChatList/ChatList';
 import NewChatButton from './NewChatButton/NewChatButton';
 
 const MIN_PHONE_LENGTH = 11;
@@ -16,6 +18,10 @@ const isPhoneNumberValid = (value: string): boolean => {
 
 interface SidebarProps {
   className?: string;
+  chats: ChatInfo[];
+  activeChatId: number | null;
+  onCreateChat: (phone: string) => void;
+  onSelectChat: (chatId: number) => void;
 }
 
 /**
@@ -23,7 +29,13 @@ interface SidebarProps {
  * @param className
  * @returns
  */
-const Sidebar = ({ className = '' }: SidebarProps) => {
+const Sidebar = ({
+  className = '',
+  chats,
+  activeChatId,
+  onCreateChat,
+  onSelectChat,
+}: SidebarProps) => {
   // Флаг показа/скрытия поля ввода номера телефона
   const [isVisiblePhoneInput, setIsVisiblePhoneInput] = useState(false);
   // Значение номера телефона
@@ -34,13 +46,21 @@ const Sidebar = ({ className = '' }: SidebarProps) => {
   const phoneInputRef = useRef<HTMLInputElement>(null);
   // Флаг нажатия Enter на поле ввода номера телефона
   const [isPhoneEntered, setIsPhoneEntered] = useState(false);
+  // Функция очистки состояния поля ввода номера телефона
+  const clearInputStates = () => {
+    setPhone('');
+    setIsPhoneValid(true);
+    setIsPhoneEntered(false);
+  };
 
   // Ввод номера телефона
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const validatedPhone = formatPhone(e.target.value);
     setPhone(validatedPhone);
 
-    isPhoneEntered && setIsPhoneValid(isPhoneNumberValid(validatedPhone));
+    if (isPhoneEntered) {
+      setIsPhoneValid(isPhoneNumberValid(validatedPhone));
+    }
   };
 
   // Нажатие Enter на поле ввода номера телефона
@@ -50,12 +70,14 @@ const Sidebar = ({ className = '' }: SidebarProps) => {
     }
 
     e.preventDefault();
+    const currentPhone = formatPhone(e.currentTarget.value);
     setIsPhoneEntered(true);
-    const phoneIsValid = isPhoneNumberValid(phone);
+    const phoneIsValid = isPhoneNumberValid(currentPhone);
     setIsPhoneValid(phoneIsValid);
     if (phoneIsValid) {
-      // Создать новый чат
-      console.log('phone', phone);
+      onCreateChat(currentPhone);
+      setIsVisiblePhoneInput(false);
+      clearInputStates();
     }
   };
 
@@ -63,9 +85,7 @@ const Sidebar = ({ className = '' }: SidebarProps) => {
   const handlePhoneInputVisibility = () => {
     setIsVisiblePhoneInput(!isVisiblePhoneInput);
     if (!isVisiblePhoneInput) {
-      setPhone('');
-      setIsPhoneValid(true);
-      setIsPhoneEntered(false);
+      clearInputStates();
     }
     setTimeout(() => {
       phoneInputRef?.current?.focus();
@@ -74,26 +94,38 @@ const Sidebar = ({ className = '' }: SidebarProps) => {
 
   return (
     <div
-      className={`${className} relative bg-white rounded-2xl p-4 h-full w-full`}
+      className={`${className} relative flex h-full w-full flex-col overflow-hidden rounded-3xl bg-white`}
     >
+      <div className='flex items-center shrink-0 px-2 h-[56px]'>
+        {isVisiblePhoneInput ? (
+          <Input
+            className='w-full'
+            ref={phoneInputRef}
+            id='phone'
+            placeholder='Введите номер телефона'
+            type='tel'
+            value={phone}
+            invalid={!isPhoneValid}
+            onChange={handlePhoneChange}
+            onKeyDown={handlePhoneKeyDown}
+          />
+        ) : (
+          <h2 className='text-lg font-medium text-gray-900 px-2'>Чаты</h2>
+        )}
+      </div>
+
+      <ChatList
+        className='min-h-0 flex-1 pt-4'
+        chats={chats}
+        activeChatId={activeChatId}
+        onSelectChat={onSelectChat}
+      />
+
       <NewChatButton
         className='absolute bottom-4 right-4'
         onClick={handlePhoneInputVisibility}
         isPencilIconVisibility={!isVisiblePhoneInput}
       />
-      {isVisiblePhoneInput && (
-        <Input
-          ref={phoneInputRef}
-          id='phone'
-          placeholder='Введите номер телефона'
-          label='Номер телефона'
-          type='tel'
-          value={phone}
-          invalid={!isPhoneValid}
-          onChange={handlePhoneChange}
-          onKeyDown={handlePhoneKeyDown}
-        />
-      )}
     </div>
   );
 };
