@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ChatWindow from '@/components/ChatWindow/ChatWindow';
 import Sidebar from '@/components/Sidebar/Sidebar';
-import type { ChatInfo } from './Main.types';
+import type { ChatInfo, MessageInfo } from './Main.types';
 
 interface MainProps {
   className?: string;
@@ -11,7 +11,15 @@ interface MainProps {
   };
 }
 
+// TODO: в будущем можно вынести в utils
 const getPhoneDigits = (phone: string) => phone.replace(/\D/g, '');
+
+// TODO: в будущем можно вынести в utils
+const formatMessageTime = (date: Date) =>
+  date.toLocaleTimeString('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
 /**
  * Главный компонент приложения
@@ -57,6 +65,34 @@ const Main = ({ className = '' }: MainProps) => {
     setCurrentChatId(newChat.id);
   };
 
+  const handleSendMessage = (text: string) => {
+    const messageText = text.trim();
+    if (!messageText || currentChatId === null) {
+      return;
+    }
+
+    const time = formatMessageTime(new Date());
+    const message: MessageInfo = {
+      id: Date.now(),
+      message: messageText,
+      time,
+      isOutgoing: true,
+    };
+
+    setChatList((prev) =>
+      prev.map((chat) =>
+        chat.id === currentChatId
+          ? {
+              ...chat,
+              lastMessage: messageText,
+              lastMessageTime: time,
+              messages: [...chat.messages, message],
+            }
+          : chat,
+      ),
+    );
+  };
+
   return (
     <div className={`${className} flex h-full w-full min-h-0`}>
       <div className='flex h-full w-80 shrink-0 flex-col p-4 md:w-96'>
@@ -68,7 +104,10 @@ const Main = ({ className = '' }: MainProps) => {
         />
       </div>
       <div className='flex h-full min-w-0 flex-1 flex-col p-4 pl-0'>
-        <ChatWindow chat={currentChat} />
+        <ChatWindow
+          chat={currentChat}
+          onSendMessage={handleSendMessage}
+        />
       </div>
     </div>
   );

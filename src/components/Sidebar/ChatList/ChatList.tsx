@@ -51,10 +51,19 @@ const ChatList = ({
           >
             <UserAvatar className='w-13.5 h-13.5' />
             <span className='min-w-0 flex-1'>
-              <span
-                className={`block truncate text-base font-medium pb-1 ${isActiveChat(chat.id) ? 'text-white' : 'text-gray-900'}`}
-              >
-                {chat.phone}
+              <span className='flex w-full gap-2 justify-between pb-1 items-center'>
+                <span
+                  className={`min-w-0 flex-1 truncate text-base font-medium ${isActiveChat(chat.id) ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {chat.phone}
+                </span>
+                {chat.lastMessageTime && (
+                  <span
+                    className={`shrink-0 text-xs ${isActiveChat(chat.id) ? 'text-white' : 'text-gray-400'}`}
+                  >
+                    {chat.lastMessageTime}
+                  </span>
+                )}
               </span>
               <span
                 className={`block truncate text-sm ${isActiveChat(chat.id) ? 'text-white' : 'text-gray-500'}`}
@@ -62,13 +71,6 @@ const ChatList = ({
                 {chat.lastMessage || 'Нет сообщений'}
               </span>
             </span>
-            {chat.lastMessageTime && (
-              <span
-                className={`shrink-0 text-xs ${isActiveChat(chat.id) ? 'text-white' : 'text-gray-400'}`}
-              >
-                {chat.lastMessageTime}
-              </span>
-            )}
           </button>
         </li>
       ))}

@@ -1,19 +1,67 @@
+import { useLayoutEffect, useRef } from 'react';
 import type { ChatInfo } from '@/components/Main/Main.types';
 import UserAvatar from '@/components/UI/UserAvatar/UserAvatar';
 import Hint from './Hint/Hint';
+import NewMessage from './NewMessage/NewMessage';
+
+const SCROLL_BOTTOM_THRESHOLD_PX = 48;
+
+const isNearBottom = (list: HTMLElement) =>
+  list.scrollHeight - list.scrollTop - list.clientHeight <=
+  SCROLL_BOTTOM_THRESHOLD_PX;
 
 interface ChatWindowProps {
   className?: string;
   chat: ChatInfo | null;
+  onSendMessage: (text: string) => void;
 }
 
 /**
- * Правое окно открытого чата
+ * Окно открытого чата
  * @param className
  * @param chat - Данные чата
+ * @param onSendMessage - Отправка текстового сообщения
  * @returns
  */
-const ChatWindow = ({ className = '', chat }: ChatWindowProps) => {
+const ChatWindow = ({
+  className = '',
+  chat,
+  onSendMessage,
+}: ChatWindowProps) => {
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef(true);
+  const chatIdRef = useRef<number | null>(null);
+
+  const handleMessagesScroll = () => {
+    const list = messagesContainerRef.current;
+    if (!list) {
+      return;
+    }
+
+    isNearBottomRef.current = isNearBottom(list);
+  };
+
+  // Прокрутка вниз, если лента уже у нижнего края или открыт другой чат
+  useLayoutEffect(() => {
+    const list = messagesContainerRef.current;
+    if (!list || !chat) {
+      chatIdRef.current = null;
+      isNearBottomRef.current = true;
+      return;
+    }
+
+    const chatChanged = chatIdRef.current !== chat.id;
+    chatIdRef.current = chat.id;
+
+    //TODO: добавить условие чтобы скроллилось при отправке нового сообщения
+    if (!chatChanged && !isNearBottomRef.current) {
+      return;
+    }
+
+    list.scrollTop = list.scrollHeight;
+    isNearBottomRef.current = true;
+  }, [chat, chat?.id, chat?.messages.length]);
+
   return (
     <div className={`${className} flex h-full w-full flex-col overflow-hidden`}>
       {!chat && (
@@ -31,7 +79,11 @@ const ChatWindow = ({ className = '', chat }: ChatWindowProps) => {
             </h2>
           </header>
 
-          <div className='flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-4 py-4'>
+          <div
+            ref={messagesContainerRef}
+            onScroll={handleMessagesScroll}
+            className='flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-4 py-4'
+          >
             {chat.messages.length === 0 && (
               <div className='flex flex-1 items-center justify-center text-center text-sm'>
                 <Hint>Сообщений пока нет</Hint>
@@ -43,17 +95,31 @@ const ChatWindow = ({ className = '', chat }: ChatWindowProps) => {
                 key={message.id}
                 className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
                   message.isOutgoing
-                    ? 'self-end bg-[var(--light-blue)] text-gray-900'
-                    : 'self-start bg-gray-100 text-gray-900'
+                    ? 'self-end bg-[var(--message-outgoing-bg)]'
+                    : 'self-start bg-white'
                 }`}
               >
-                <p>{message.message}</p>
-                <p className='mt-1 text-right text-[10px] text-gray-500'>
+                <p className='wrap-break-word whitespace-pre-wrap'>
+                  {message.message}
+                </p>
+                <p
+                  className={`mt-1 text-right text-[10px] ${
+                    message.isOutgoing
+                      ? 'text-[var(--message-out-time-color)]'
+                      : 'text-gray-400'
+                  }`}
+                >
                   {message.time}
                 </p>
               </div>
             ))}
           </div>
+
+          <NewMessage
+            key={chat.id}
+            className='mt-2 shrink-0'
+            onSend={onSendMessage}
+          />
         </>
       )}
     </div>
