@@ -4,13 +4,23 @@
  */
 import { createContext, useContext, useState } from 'react';
 import type { ChatInfo, MessageInfo, ShortChatInfo } from '@/types/chat.types';
+import type { UserData } from '@/types/user.types';
+import {
+  sendMessage as sendMessageService,
+  type SendMessageResult,
+} from '@/services/chat';
 
 export interface ChatContextProps {
   chatList: ChatInfo[];
   addChat: (data: ShortChatInfo) => void;
-  addMessage: (chatId: string, message: string, time: string) => void;
-  currentChatId: string | null;
-  setCurrentChatId: (currentChatId: string | null) => void;
+  addMessage: (chatId: string, messageData: MessageInfo) => void;
+  currentChatId: string;
+  setCurrentChatId: (currentChatId: string) => void;
+  sendMessage: (
+    chatId: string,
+    message: string,
+    userData: UserData,
+  ) => Promise<SendMessageResult>;
 }
 
 interface ChatContextProviderProps {
@@ -58,29 +68,47 @@ export const ChatContextProvider = ({ children }: ChatContextProviderProps) => {
   /**
    * Добавить новое сообщение в чат по его chatId
    * @param chatId - chatId чата
-   * @param message - новое сообщение
+   * @param messageData - данные о сообщении
    * @param time - время сообщения
    */
-  const addMessage = (chatId: string, message: string, time: string) => {
-    const newMessageData: MessageInfo = {
-      id: Date.now(),
-      message: message,
-      time,
-      isOutgoing: true,
-    };
-
+  const addMessage = (chatId: string, messageData: MessageInfo) => {
     setChatList((prev: ChatInfo[]) =>
       prev.map((chat: ChatInfo) =>
         chat.chatId === chatId
           ? {
               ...chat,
-              lastMessage: message,
-              lastMessageTime: time,
-              messages: [...chat.messages, newMessageData],
+              lastMessage: messageData.message,
+              lastMessageTime: messageData.time,
+              messages: [...chat.messages, messageData],
             }
           : chat,
       ),
     );
+  };
+
+  /**
+   * Отправить сообщение в Telegram
+   * @param chatId - chatId чата
+   * @param message - сообщение
+   */
+  const sendMessage = async (
+    chatId: string,
+    message: string,
+    userData: UserData,
+  ): Promise<SendMessageResult> => {
+    const result = await sendMessageService(chatId, message, userData);
+    if (result.isSuccess) {
+      addMessage(chatId, {
+        id: String(result.idMessage),
+        message,
+        time: new Date().toLocaleTimeString('ru-RU', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        isOutgoing: true,
+      });
+    }
+    return result;
   };
 
   return (
@@ -88,9 +116,10 @@ export const ChatContextProvider = ({ children }: ChatContextProviderProps) => {
       value={{
         chatList,
         addChat,
-        currentChatId,
+        currentChatId: currentChatId ?? '',
         setCurrentChatId,
         addMessage,
+        sendMessage,
       }}
     >
       {children}

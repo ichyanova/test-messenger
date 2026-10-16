@@ -1,20 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
-import { Send } from 'lucide-react';
+import { Loader2, Send } from 'lucide-react';
 
 import Textarea from './Textarea/Textarea';
+import { useChatContext } from '@/context/use-chat-context';
+import { useAuthContext } from '@/context/use-auth-context';
 
 interface NewMessageProps {
   className?: string;
-  onSend: (text: string) => void;
 }
 
 /**
  * Поле ввода и кнопка отправки текстового сообщения
  * @param className
- * @param onSend - отправка текста
  */
-const NewMessage = ({ className = '', onSend }: NewMessageProps) => {
+const NewMessage = ({ className = '' }: NewMessageProps) => {
+  const { currentChatId, sendMessage } = useChatContext();
+  const { userData } = useAuthContext();
   const [text, setText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messageText = text.trim();
   const canSend = messageText.length > 0;
@@ -23,18 +27,25 @@ const NewMessage = ({ className = '', onSend }: NewMessageProps) => {
     textareaRef.current?.focus();
   }, []);
 
-  const sendMessage = () => {
-    if (!canSend) {
+  const sendMessageHandler = async () => {
+    if (!canSend || isLoading) {
       return;
     }
 
-    onSend(messageText);
-    setText('');
+    setIsLoading(true);
+    const result = await sendMessage(currentChatId, messageText, userData);
+    if (result.isSuccess) {
+      setText('');
+      setError(null);
+    } else {
+      setError(result.errorMessage);
+    }
+    setIsLoading(false);
   };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    sendMessage();
+    sendMessageHandler();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -43,7 +54,12 @@ const NewMessage = ({ className = '', onSend }: NewMessageProps) => {
     }
 
     e.preventDefault();
-    sendMessage();
+    sendMessageHandler();
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value);
+    setError(null);
   };
 
   return (
@@ -51,7 +67,7 @@ const NewMessage = ({ className = '', onSend }: NewMessageProps) => {
       className={`${className} flex items-end gap-2 rounded-3xl bg-white p-1`}
       onSubmit={handleSubmit}
     >
-      <div className='flex flex-1 pl-4'>
+      <div className='flex flex-col flex-1 pl-4'>
         <Textarea
           className='min-w-0 w-full py-2'
           ref={textareaRef}
@@ -60,17 +76,24 @@ const NewMessage = ({ className = '', onSend }: NewMessageProps) => {
           value={text}
           enterKeyHint='send'
           autoComplete='off'
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
+          disabled={isLoading}
         />
+        {error && <span className='text-sm text-[var(--alert)]'>{error}</span>}
       </div>
+
       <button
         type='submit'
         aria-label='Отправить сообщение'
-        disabled={!canSend}
+        disabled={!canSend || isLoading}
         className='flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-[var(--blue)] text-white transition-colors hover:bg-[var(--dark-blue)] disabled:cursor-default disabled:bg-[var(--light-blue)]'
       >
-        <Send className='h-5 w-5' />
+        {isLoading ? (
+          <Loader2 className='h-5 w-5 animate-spin' />
+        ) : (
+          <Send className='h-5 w-5' />
+        )}
       </button>
     </form>
   );

@@ -1,5 +1,5 @@
 export interface MessageInfo {
-  id: number;
+  id: string;
   message: string;
   time: string;
   isOutgoing: boolean;

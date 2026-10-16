@@ -13,13 +13,6 @@ const isNearBottom = (list: HTMLElement) =>
   list.scrollHeight - list.scrollTop - list.clientHeight <=
   SCROLL_BOTTOM_THRESHOLD_PX;
 
-// TODO: в будущем можно вынести в utils
-const formatMessageTime = (date: Date) =>
-  date.toLocaleTimeString('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
 interface ChatWindowProps {
   className?: string;
 }
@@ -30,7 +23,7 @@ interface ChatWindowProps {
  * @returns
  */
 const ChatWindow = ({ className = '' }: ChatWindowProps) => {
-  const { chatList, currentChatId, addMessage } = useChatContext();
+  const { chatList, currentChatId } = useChatContext();
 
   const chat =
     chatList.find((chat: ChatInfo) => chat.chatId === currentChatId) ?? null;
@@ -69,16 +62,6 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
     isNearBottomRef.current = true;
   }, [chat, chat?.chatId, chat?.messages.length]);
 
-  const handleSendMessage = (text: string) => {
-    const messageText = text.trim();
-    if (!messageText || currentChatId === null) {
-      return;
-    }
-
-    const time = formatMessageTime(new Date());
-    addMessage(currentChatId, messageText, time);
-  };
-
   return (
     <div className={`${className} flex h-full w-full flex-col overflow-hidden`}>
       {!chat && (
@@ -102,7 +85,7 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
           <div
             ref={messagesContainerRef}
             onScroll={handleMessagesScroll}
-            className='flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-4 py-4'
+            className='flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-1 py-4'
           >
             {chat.messages.length === 0 && (
               <div className='flex flex-1 items-center justify-center text-center text-sm'>
@@ -138,7 +121,6 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
           <NewMessage
             key={chat.chatId}
             className='mt-2 shrink-0'
-            onSend={handleSendMessage}
           />
         </>
       )}
