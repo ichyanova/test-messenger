@@ -1,26 +1,18 @@
-import { useState } from 'react';
 import './App.css';
+import { useAuthContext } from './context/use-auth-context';
 import Auth from './components/Auth/Auth';
-import Main from './components/Main/Main';
+import Chat from './components/Chat/Chat';
 
-function App() {
-  const [userData, setUserData] = useState({
-    idInstance: '',
-    apiTokenInstance: '',
-  });
-  const handleLogin = (idInstance: string, apiTokenInstance: string) => {
-    setUserData({ idInstance, apiTokenInstance });
-  };
-  const isAuthorized = userData.idInstance && userData.apiTokenInstance;
+const App = () => {
+  const { isAuth } = useAuthContext();
 
   return (
     <div className='tg-bg'>
       <div className='tg-content font-sans gap-2'>
-        {!isAuthorized && <Auth onLogin={handleLogin} />}
-        {isAuthorized && <Main userData={userData} />}
+        {!isAuth ? <Auth /> : <Chat />}
       </div>
     </div>
   );
-}
+};
 
 export default App;

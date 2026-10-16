@@ -5,9 +5,13 @@ export interface MessageInfo {
   isOutgoing: boolean;
 }
 
-export interface ChatInfo {
-  id: number;
-  phone: string;
+export interface ShortChatInfo {
+  chatId: string;
+  username: string;
+  phoneNumber: number;
+}
+
+export interface ChatInfo extends ShortChatInfo {
   lastMessage: string;
   lastMessageTime: string;
   messages: MessageInfo[];

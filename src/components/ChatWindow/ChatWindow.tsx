@@ -1,8 +1,11 @@
 import { useLayoutEffect, useRef } from 'react';
-import type { ChatInfo } from '@/components/Main/Main.types';
+
+import type { ChatInfo } from '@/types/chat.types';
+
 import UserAvatar from '@/components/UI/UserAvatar/UserAvatar';
 import Hint from './Hint/Hint';
 import NewMessage from './NewMessage/NewMessage';
+import { useChatContext } from '@/context/use-chat-context';
 
 const SCROLL_BOTTOM_THRESHOLD_PX = 48;
 
@@ -10,27 +13,31 @@ const isNearBottom = (list: HTMLElement) =>
   list.scrollHeight - list.scrollTop - list.clientHeight <=
   SCROLL_BOTTOM_THRESHOLD_PX;
 
+// TODO: в будущем можно вынести в utils
+const formatMessageTime = (date: Date) =>
+  date.toLocaleTimeString('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
 interface ChatWindowProps {
   className?: string;
-  chat: ChatInfo | null;
-  onSendMessage: (text: string) => void;
 }
 
 /**
  * Окно открытого чата
  * @param className
- * @param chat - Данные чата
- * @param onSendMessage - Отправка текстового сообщения
  * @returns
  */
-const ChatWindow = ({
-  className = '',
-  chat,
-  onSendMessage,
-}: ChatWindowProps) => {
+const ChatWindow = ({ className = '' }: ChatWindowProps) => {
+  const { chatList, currentChatId, addMessage } = useChatContext();
+
+  const chat =
+    chatList.find((chat: ChatInfo) => chat.chatId === currentChatId) ?? null;
+
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
-  const chatIdRef = useRef<number | null>(null);
+  const chatIdRef = useRef<string | null>(null);
 
   const handleMessagesScroll = () => {
     const list = messagesContainerRef.current;
@@ -50,8 +57,8 @@ const ChatWindow = ({
       return;
     }
 
-    const chatChanged = chatIdRef.current !== chat.id;
-    chatIdRef.current = chat.id;
+    const chatChanged = chatIdRef.current !== chat.chatId;
+    chatIdRef.current = chat.chatId;
 
     //TODO: добавить условие чтобы скроллилось при отправке нового сообщения
     if (!chatChanged && !isNearBottomRef.current) {
@@ -60,7 +67,17 @@ const ChatWindow = ({
 
     list.scrollTop = list.scrollHeight;
     isNearBottomRef.current = true;
-  }, [chat, chat?.id, chat?.messages.length]);
+  }, [chat, chat?.chatId, chat?.messages.length]);
+
+  const handleSendMessage = (text: string) => {
+    const messageText = text.trim();
+    if (!messageText || currentChatId === null) {
+      return;
+    }
+
+    const time = formatMessageTime(new Date());
+    addMessage(currentChatId, messageText, time);
+  };
 
   return (
     <div className={`${className} flex h-full w-full flex-col overflow-hidden`}>
@@ -75,7 +92,10 @@ const ChatWindow = ({
           <header className='flex items-center gap-3 p-1 rounded-4xl bg-white'>
             <UserAvatar className='w-10 h-10' />
             <h2 className='truncate text-base font-medium text-gray-900'>
-              {chat.phone}
+              {chat.username}{' '}
+              <span className='text-sm text-gray-400'>
+                (+{chat.phoneNumber})
+              </span>
             </h2>
           </header>
 
@@ -116,9 +136,9 @@ const ChatWindow = ({
           </div>
 
           <NewMessage
-            key={chat.id}
+            key={chat.chatId}
             className='mt-2 shrink-0'
-            onSend={onSendMessage}
+            onSend={handleSendMessage}
           />
         </>
       )}
