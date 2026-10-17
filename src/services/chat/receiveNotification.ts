@@ -57,7 +57,7 @@ interface ReceiveNotificationResponse {
 /**
  * Получить входящее уведомление
  */
-export const receiveNotification = async (userData: UserData): Promise<ReceiveNotificationResult> => {
+export const receiveNotification = async (userData: UserData, signal?: AbortSignal): Promise<ReceiveNotificationResult> => {
   const { idInstance, apiTokenInstance } = userData;
 
   try {
@@ -65,6 +65,7 @@ export const receiveNotification = async (userData: UserData): Promise<ReceiveNo
       `${API_CONFIG.BASE_URL}/waInstance${idInstance}/${API_CONFIG.METHODS.RECEIVE_NOTIFICATION}/${apiTokenInstance}?receiveTimeout=${RECEIVE_TIMEOUT_SECONDS}`,
       {
         method: 'GET',
+        signal,
       },
     );
 
@@ -142,6 +143,10 @@ export const receiveNotification = async (userData: UserData): Promise<ReceiveNo
       errorMessage: 'Не удалось получить уведомление',
     };
   } catch (error: unknown) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw error;
+    }
+
     return {
       isSuccess: false,
       receiptId: null,

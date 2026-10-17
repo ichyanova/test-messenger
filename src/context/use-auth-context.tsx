@@ -1,9 +1,9 @@
 /**
- * Хук для работы с контекстом авторизации
+ * Контекст для работы с авторизацией
  */
 import { createContext, useContext, useState } from 'react';
 
-import { auth, type AuthResult } from '@/services/auth';
+import { auth as authService, type AuthResult } from '@/services/auth';
 import { type UserData } from '@/types/user.types';
 
 export interface AuthContextProps {
@@ -25,11 +25,11 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   });
   const isAuth = Boolean(userData.idInstance && userData.apiTokenInstance);
 
-  const authFn = async (
+  const auth = async (
     idInstance: string,
     apiTokenInstance: string,
   ): Promise<AuthResult> => {
-    const result = await auth(idInstance, apiTokenInstance);
+    const result = await authService(idInstance, apiTokenInstance);
 
     if (result.isSuccess) {
       setUserData({ idInstance, apiTokenInstance });
@@ -43,7 +43,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       value={{
         userData,
         isAuth,
-        auth: authFn,
+        auth,
       }}
     >
       {children}

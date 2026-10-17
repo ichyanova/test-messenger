@@ -2,19 +2,29 @@
  * Сетевой слой для работы с авторизацией
  */
 import { API_CONFIG } from '@/config/api.config';
-import { type InstanseStateType } from '@/types/auth.types';
-import { INSTANSE_STATE_TYPE, INSTANSE_STATE_MESSAGE } from '@/const/auth.const';
+import { type InstanceStateType } from '@/types/auth.types';
+import { INSTANCE_STATE_TYPE, INSTANCE_STATE_MESSAGE } from '@/const/auth.const';
 
 export interface AuthResult {
   isSuccess: boolean;
   errorMessage: string | null;
 }
 
-function isInstanseState(value: unknown): value is InstanseStateType {
+/**
+ * Проверка типа состояния инстанса
+ */
+function isInstanceState(value: unknown): value is InstanceStateType {
   return (
     typeof value === 'string' &&
-    Object.values(INSTANSE_STATE_TYPE).includes(value as InstanseStateType)
+    Object.values(INSTANCE_STATE_TYPE).includes(value as InstanceStateType)
   );
+}
+
+/**
+ * Структура ответа сервера
+ */
+interface GetStateInstanceResponse {
+  stateInstance?: string;
 }
 
 export const auth = async (
@@ -37,19 +47,20 @@ export const auth = async (
       }
 
       const data: unknown = await response.json();
-      const stateInstance =
-        data && typeof data === 'object' && 'stateInstance' in data
-          ? data.stateInstance
-          : undefined;
 
-      if (stateInstance === INSTANSE_STATE_TYPE.AUTH) {
+      let stateInstance: unknown = undefined;
+      if (typeof data === 'object' && data !== null) {
+        stateInstance = (data as GetStateInstanceResponse).stateInstance;
+      }
+
+      if (stateInstance === INSTANCE_STATE_TYPE.AUTH) {
         return { isSuccess: true, errorMessage: null };
       }
 
-      if (isInstanseState(stateInstance)) {
+      if (isInstanceState(stateInstance)) {
         return {
           isSuccess: false,
-          errorMessage: `${INSTANSE_STATE_MESSAGE[stateInstance]}. Проверьте личный кабинет GREEN-API.`,
+          errorMessage: `${INSTANCE_STATE_MESSAGE[stateInstance]}. Проверьте личный кабинет GREEN-API.`,
         };
       }
 

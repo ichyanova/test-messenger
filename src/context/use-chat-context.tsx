@@ -1,18 +1,16 @@
 /**
- * Хук для работы с контекстом чатов
- *
+ * Контекст для работы с чатами
  */
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import type { ChatInfo, MessageInfo, ShortChatInfo } from '@/types/chat.types';
 import type { UserData } from '@/types/user.types';
 import {
   sendMessage as sendMessageService,
   type SendMessageResult,
   type ReceivedMessage,
-  receiveNotification as receiveNotificationService,
-  deleteNotification as deleteNotificationService,
 } from '@/services/chat';
 import { useAuthContext } from '@/context/use-auth-context';
+import { useMessagePoller } from '@/hooks/use-message-poller';
 
 export interface ChatContextProps {
   chatList: ChatInfo[];
@@ -41,79 +39,58 @@ export const ChatContextProvider = ({ children }: ChatContextProviderProps) => {
   /**
    * Добавить новый чат в список и установить его активным
    */
-  const addChat = (data: ShortChatInfo) => {
-    const existingChat = chatList.find(
-      (chat: ChatInfo) => chat.chatId === data.chatId,
-    );
-
-    if (existingChat) {
-      setCurrentChatId(existingChat.chatId);
-      return;
-    }
-
-    const newChat: ChatInfo = {
-      chatId: data.chatId,
-      username: data.username,
-      phoneNumber: data.phoneNumber,
-      lastMessage: '',
-      lastMessageTime: '',
-      messages: [],
-    };
-
+  const addChat = useCallback((data: ShortChatInfo) => {
     setChatList((prev: ChatInfo[]) => {
-      const alreadyExists = prev.some(
+      const existingChat = prev.some(
         (chat: ChatInfo) => chat.chatId === data.chatId,
       );
-      return alreadyExists ? prev : [newChat, ...prev];
+
+      if (existingChat) {
+        return prev;
+      }
+
+      const newChat: ChatInfo = {
+        chatId: data.chatId,
+        username: data.username,
+        phoneNumber: data.phoneNumber,
+        lastMessage: '',
+        lastMessageTime: '',
+        messages: [],
+      };
+
+      return [newChat, ...prev];
     });
-    setCurrentChatId(newChat.chatId);
-  };
+    setCurrentChatId(data.chatId);
+  }, []);
 
   /**
    * Добавить новое сообщение в чат по его chatId
    */
-  const addMessage = (chatId: string, messageData: MessageInfo) => {
-    setChatList((prev: ChatInfo[]) =>
-      prev.map((chat: ChatInfo) =>
-        chat.chatId === chatId
-          ? {
-              ...chat,
-              lastMessage: messageData.message,
-              lastMessageTime: messageData.time,
-              messages: [...chat.messages, messageData],
-            }
-          : chat,
-      ),
-    );
-  };
+  const addMessage = useCallback((chatId: string, messageData: MessageInfo) => {
+    setChatList((prev: ChatInfo[]) => {
+      const activeChat = prev.find((chat: ChatInfo) => chat.chatId === chatId);
 
-  /**
-   * Отправить сообщение в Telegram
-   */
-  const sendMessage = async (
-    chatId: string,
-    message: string,
-    userData: UserData,
-  ): Promise<SendMessageResult> => {
-    const result = await sendMessageService(chatId, message, userData);
-    if (result.isSuccess) {
-      addMessage(chatId, {
-        id: String(result.idMessage),
-        message,
-        time: new Date().toLocaleTimeString('ru-RU', {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        isOutgoing: true,
-      });
-    }
-    return result;
-  };
+      if (!activeChat) {
+        return prev;
+      }
+
+      const updatedChat: ChatInfo = {
+        ...activeChat,
+        lastMessage: messageData.message,
+        lastMessageTime: messageData.time,
+        messages: [...activeChat.messages, messageData],
+      };
+      const chatListWithoutUpdatedChat = prev.filter(
+        (chat: ChatInfo) => chat.chatId !== chatId,
+      );
+      return [updatedChat, ...chatListWithoutUpdatedChat];
+    });
+  }, []);
 
   /**
    * Добавить входящее сообщение. Если чата ещё нет, создать его
    */
-  const addIncomingMessage = (data: ReceivedMessage) => {
+  const addIncomingMessage = useCallback((data: ReceivedMessage) => {
     setChatList((prev: ChatInfo[]) => {
       const existingChat = prev.find(
         (chat: ChatInfo) => chat.chatId === data.chatId,
@@ -140,61 +117,47 @@ export const ChatContextProvider = ({ children }: ChatContextProviderProps) => {
         return prev;
       }
 
-      // TODO: Поднять чат с новым сообщением вверх списка
-      return prev.map((chat: ChatInfo) =>
-        chat.chatId === data.chatId
-          ? {
-              ...chat,
-              lastMessage: data.messageData.message,
-              lastMessageTime: data.messageData.time,
-              messages: [...chat.messages, data.messageData],
-            }
-          : chat,
+      const updatedChat: ChatInfo = {
+        ...existingChat,
+        lastMessage: data.messageData.message,
+        lastMessageTime: data.messageData.time,
+        messages: [...existingChat.messages, data.messageData],
+      };
+
+      const chatListWithoutUpdatedChat = prev.filter(
+        (chat: ChatInfo) => chat.chatId !== data.chatId,
       );
+      return [updatedChat, ...chatListWithoutUpdatedChat];
     });
+  }, []);
+
+  /**
+   * Отправить сообщение в Telegram
+   */
+  const sendMessage = async (
+    chatId: string,
+    message: string,
+    userData: UserData,
+  ): Promise<SendMessageResult> => {
+    const result = await sendMessageService(chatId, message, userData);
+    if (result.isSuccess) {
+      addMessage(chatId, {
+        id: String(result.idMessage),
+        message,
+        time: new Date().toLocaleTimeString('ru-RU', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        isOutgoing: true,
+      });
+    }
+    return result;
   };
 
   /**
    * Получение входящих сообщений
    */
-  // TODO: Добавить abortController в receiveNotification
-  useEffect(() => {
-    if (!userData.idInstance || !userData.apiTokenInstance) {
-      return;
-    }
-
-    let stopped = false;
-
-    const poll = async () => {
-      while (!stopped) {
-        const result = await receiveNotificationService(userData);
-
-        if (stopped) {
-          return;
-        }
-
-        if (!result.isSuccess) {
-          console.error(result.errorMessage);
-          await new Promise((resolve) => setTimeout(resolve, 5000));
-          continue;
-        }
-
-        if (result.data) {
-          addIncomingMessage(result.data);
-        }
-
-        if (result.receiptId) {
-          await deleteNotificationService(result.receiptId, userData);
-        }
-      }
-    };
-
-    poll();
-
-    return () => {
-      stopped = true;
-    };
-  }, [userData]);
+  useMessagePoller({ userData, onMessageReceived: addIncomingMessage });
 
   return (
     <ChatContext.Provider

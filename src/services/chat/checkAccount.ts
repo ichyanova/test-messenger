@@ -13,6 +13,16 @@ export interface CheckAccountResult {
 }
 
 /**
+ * Структура ответа от сервера
+ */
+interface CheckAccountResponse {
+  exist: boolean;
+  chatId?: string;
+  username?: string;
+  phoneNumber?: string | number;
+}
+
+/**
  * Проверить наличие аккаунта в Telegram
  */
 export const checkAccount = async (phone: number, userData: UserData): Promise<CheckAccountResult> => {
@@ -43,7 +53,7 @@ export const checkAccount = async (phone: number, userData: UserData): Promise<C
       const data: unknown = await resp.json();
 
       if (typeof data === 'object' && data !== null) {
-        const recordData = data as Record<string, string | number | boolean>;
+        const recordData = data as CheckAccountResponse;
         if (recordData.exist && recordData.chatId) {
           return {
             isSuccess: true,

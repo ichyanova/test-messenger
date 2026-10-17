@@ -1,6 +1,5 @@
 /**
  * Сервис для отправки сообщений
- * @module sendMessage
  */
 import { API_CONFIG } from '@/config/api.config';
 import type { UserData } from '@/types/user.types';
@@ -12,6 +11,13 @@ export interface SendMessageResult {
   isSuccess: boolean;
   idMessage: string | null;
   errorMessage: string | null;
+}
+
+/**
+ * Структура ответа от сервера
+ */
+interface SendMessageResponse {
+  idMessage: string | number;
 }
 
 /**
@@ -46,7 +52,7 @@ export const sendMessage = async (chatId: string, message: string, userData: Use
       const data: unknown = await resp.json();
 
       if (typeof data === 'object' && data !== null) {
-        const recordData = data as Record<string, string | number>;
+        const recordData = data as SendMessageResponse;
         if (recordData.idMessage) {
           return {
             isSuccess: true,
