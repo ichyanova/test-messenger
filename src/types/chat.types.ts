@@ -1,3 +1,6 @@
+/**
+ * Типы для работы с чатами
+ */
 export interface MessageInfo {
   id: string;
   message: string;

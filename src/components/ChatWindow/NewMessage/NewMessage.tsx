@@ -1,3 +1,7 @@
+/**
+ * Поле ввода и кнопка отправки текстового сообщения
+ */
+
 import { useEffect, useRef, useState } from 'react';
 import { Loader2, Send } from 'lucide-react';
 
@@ -9,10 +13,6 @@ interface NewMessageProps {
   className?: string;
 }
 
-/**
- * Поле ввода и кнопка отправки текстового сообщения
- * @param className
- */
 const NewMessage = ({ className = '' }: NewMessageProps) => {
   const { currentChatId, sendMessage } = useChatContext();
   const { userData } = useAuthContext();
@@ -28,7 +28,7 @@ const NewMessage = ({ className = '' }: NewMessageProps) => {
   }, []);
 
   const sendMessageHandler = async () => {
-    if (!canSend || isLoading) {
+    if (!canSend || isLoading || !currentChatId) {
       return;
     }
 
