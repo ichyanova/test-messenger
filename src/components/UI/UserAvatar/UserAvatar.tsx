@@ -1,14 +1,14 @@
+/**
+ * Аватар пользователя
+ * - иконка пользователя по-умолчанию
+ */
+
 import { UserRoundIcon } from 'lucide-react';
 
 interface UserAvatarProps {
   className?: string;
 }
 
-/**
- * Аватар пользователя
- * @param className
- * @returns
- */
 const UserAvatar = ({ className = '' }: UserAvatarProps) => {
   return (
     <span

@@ -1,3 +1,7 @@
+/**
+ * Список чатов
+ */
+
 import UserAvatar from '@/components/UI/UserAvatar/UserAvatar';
 import { useChatContext } from '@/context/use-chat-context';
 
@@ -5,11 +9,6 @@ interface ChatListProps {
   className?: string;
 }
 
-/**
- * Список чатов в сайдбаре
- * @param className
- * @returns
- */
 const ChatList = ({ className = '' }: ChatListProps) => {
   const { chatList, currentChatId, setCurrentChatId } = useChatContext();
 

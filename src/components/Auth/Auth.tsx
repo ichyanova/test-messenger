@@ -1,13 +1,14 @@
+/**
+ * Авторизация через данные из личного кабинета Green API (idInstance и apiTokenInstance)
+ * Проверка валидности ключей методом getStateInstance
+ */
+
 import React, { useState } from 'react';
 
 import { useAuthContext } from '@/context/use-auth-context';
 import Input from '@/components/UI/Input/Input';
 import Button from '@/components/UI/Button/Button';
 
-/**
- * Авторизация через данные из личного кабинета Green API (idInstance и apiTokenInstance)
- * Проверка валидности ключей методом getStateInstance
- */
 export default function Auth() {
   const { auth } = useAuthContext();
   const [idInstance, setIdInstance] = useState('');

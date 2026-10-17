@@ -1,3 +1,9 @@
+/**
+ * Базовая кнопка
+ *  - возможность задавать размер
+ *  - варианты оформления
+ */
+
 import { Loader2 } from 'lucide-react';
 import type { ButtonProps, ButtonSize, ButtonVariant } from './Button.types';
 import { BUTTON_SIZE, BUTTON_VARIANT } from './Button.const';

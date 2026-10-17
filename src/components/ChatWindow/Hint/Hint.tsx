@@ -1,14 +1,12 @@
+/**
+ * Подсказка в чате
+ */
+
 interface HintProps {
   className?: string;
   children: React.ReactNode;
 }
 
-/**
- * Подсказка в чате
- * @param className
- * @param children
- * @returns
- */
 const Hint = ({ className = '', children }: HintProps) => {
   return (
     <div

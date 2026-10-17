@@ -1,3 +1,9 @@
+/**
+ * Сайдбар:
+ * - поле ввода номера телефона
+ * - список чатов
+ * - кнопка добавления нового чата
+ */
 import { useRef, useState } from 'react';
 
 import { useChatContext } from '@/context/use-chat-context';
@@ -25,11 +31,6 @@ interface SidebarProps {
   className?: string;
 }
 
-/**
- * Сайдбар с полем ввода номера телефона
- * @param className
- * @returns
- */
 const Sidebar = ({ className = '' }: SidebarProps) => {
   const { userData } = useAuthContext();
 

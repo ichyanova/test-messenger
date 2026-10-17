@@ -1,7 +1,6 @@
 
 
 export const API_CONFIG = {
-  //TG
   BASE_URL: 'https://4100.api.green-api.com',
   METHODS: {
     GET_STATE: 'getStateInstance',

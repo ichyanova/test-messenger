@@ -1,3 +1,9 @@
+/**
+ * Кнопка добавления нового чата
+ * - иконка карандаша по-умолчанию
+ * - иконка X для закрытия поля ввода номера телефона
+ */
+
 import { Pencil, X } from 'lucide-react';
 
 interface NewChatButtonProps {
@@ -5,13 +11,6 @@ interface NewChatButtonProps {
   onClick: () => void;
   isPencilIconVisibility: boolean;
 }
-/**
- * Кнопка для создания нового чата
- * @param className - CSS класс для кнопки
- * @param onClick - Функция для обработки клика
- * @param isPencilIconVisibility - Булево значение, должна ли отображаться иконка карандаша
- * @returns Компонент NewChatButton
- */
 const NewChatButton = ({
   className = '',
   onClick,

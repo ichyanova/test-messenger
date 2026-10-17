@@ -1,3 +1,7 @@
+/**
+ * Многострочное поле ввода сообщения
+ */
+
 import type { ComponentProps } from 'react';
 
 interface CustomTextareaProps {
@@ -8,13 +12,6 @@ interface CustomTextareaProps {
 type TextareaProps = CustomTextareaProps &
   Omit<ComponentProps<'textarea'>, keyof CustomTextareaProps>;
 
-/**
- * Многострочное поле ввода сообщения
- * @param className
- * @param value - Текст
- * @param ref - Ссылка на поле
- * @param textareaProps - Остальные стандартные атрибуты textarea
- */
 const Textarea = ({
   className = '',
   value,

@@ -1,4 +1,6 @@
-/* Input.css (Tailwind CSS v4 + Native Nesting) */
+/**
+ * Стили инпута с использованием CSS переменных Tailwind
+ */
 
 .input-container {
   --input-primary-color: var(--color-gray-400);

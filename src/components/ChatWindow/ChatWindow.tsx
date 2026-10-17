@@ -1,3 +1,9 @@
+/**
+ * Окно активного чата
+ * - отображение сообщений
+ * - поле ввода и кнопка отправки сообщения
+ */
+
 import { useLayoutEffect, useRef } from 'react';
 
 import type { ChatInfo } from '@/types/chat.types';
@@ -17,11 +23,6 @@ interface ChatWindowProps {
   className?: string;
 }
 
-/**
- * Окно открытого чата
- * @param className
- * @returns
- */
 const ChatWindow = ({ className = '' }: ChatWindowProps) => {
   const { chatList, currentChatId } = useChatContext();
 
