@@ -3,7 +3,7 @@
  */
 import { useEffect } from 'react';
 
-import type { UserData } from '@/types/user.types';
+import type { UserData } from '@/types/auth.types';
 import {
   receiveNotification as receiveNotificationService,
   deleteNotification as deleteNotificationService,

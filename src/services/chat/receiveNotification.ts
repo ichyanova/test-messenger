@@ -4,7 +4,7 @@
 
 import { API_CONFIG } from '@/config/api.config';
 import type { MessageInfo } from '@/types/chat.types';
-import type { UserData } from '@/types/user.types';
+import type { UserData } from '@/types/auth.types';
 
 /**
  * Таймаут ожидания уведомления

@@ -2,7 +2,7 @@
  * Удалить уведомление из очереди
   */
 
-import type { UserData } from "@/types/user.types";
+import type { UserData } from "@/types/auth.types";
 import { API_CONFIG } from "@/config/api.config";
 
 export const deleteNotification = async (receiptId: number, userData: UserData): Promise<void> => {

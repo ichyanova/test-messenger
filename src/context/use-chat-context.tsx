@@ -3,7 +3,7 @@
  */
 import { createContext, useContext, useState, useCallback } from 'react';
 import type { ChatInfo, MessageInfo, ShortChatInfo } from '@/types/chat.types';
-import type { UserData } from '@/types/user.types';
+import type { UserData } from '@/types/auth.types';
 import {
   sendMessage as sendMessageService,
   type SendMessageResult,

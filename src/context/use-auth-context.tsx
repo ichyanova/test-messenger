@@ -4,7 +4,7 @@
 import { createContext, useContext, useState } from 'react';
 
 import { auth as authService, type AuthResult } from '@/services/auth';
-import { type UserData } from '@/types/user.types';
+import { type UserData } from '@/types/auth.types';
 
 export interface AuthContextProps {
   userData: UserData;
