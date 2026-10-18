@@ -17,7 +17,7 @@ export interface ChatContextProps {
   addChat: (data: ShortChatInfo) => void;
   addMessage: (chatId: string, messageData: MessageInfo) => void;
   currentChatId: string | null;
-  setCurrentChatId: (currentChatId: string) => void;
+  setCurrentChatId: (currentChatId: string | null) => void;
   sendMessage: (
     chatId: string,
     message: string,

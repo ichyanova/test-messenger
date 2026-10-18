@@ -30,7 +30,7 @@ const Header = ({ className = '' }: HeaderProps) => {
         type='button'
         className='p-1 sm:hidden'
         onClick={() => {
-          setCurrentChatId('');
+          setCurrentChatId(null);
         }}
       >
         <ArrowLeftIcon className='w-6 h-6' />
