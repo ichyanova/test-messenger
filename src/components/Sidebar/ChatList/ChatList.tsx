@@ -5,6 +5,8 @@
 import UserAvatar from '@/components/UI/UserAvatar/UserAvatar';
 import { useChatContext } from '@/context/use-chat-context';
 
+//TODO custom scrollbar
+
 interface ChatListProps {
   className?: string;
 }

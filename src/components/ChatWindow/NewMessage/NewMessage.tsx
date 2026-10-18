@@ -40,6 +40,7 @@ const NewMessage = ({ className = '' }: NewMessageProps) => {
     } else {
       setError(result.errorMessage);
     }
+    setTimeout(() => textareaRef.current?.focus(), 100);
     setIsLoading(false);
   };
 

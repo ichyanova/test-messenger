@@ -39,19 +39,16 @@ const Button = ({
 }: ButtonProps) => {
   return (
     <button
-      className={`${className} ${variantClassNames(variant)} ${sizeClassNames(size)} w-full flex place-items-center justify-center rounded-2xl cursor-pointer disabled:cursor-default relative`}
+      className={`${className} ${variantClassNames(variant)} ${sizeClassNames(size)} w-full flex items-center justify-center rounded-2xl cursor-pointer disabled:cursor-default relative`}
       type={type}
       disabled={disabled || isLoading}
       {...props}
     >
       {isLoading ? (
-        <>
-          Пожалуйста подождите...
-          <Loader2
-            size={24}
-            className='animate-spin absolute right-4'
-          />
-        </>
+        <Loader2
+          size={24}
+          className='animate-spin'
+        />
       ) : (
         children
       )}

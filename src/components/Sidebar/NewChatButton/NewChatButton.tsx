@@ -20,7 +20,7 @@ const NewChatButton = ({
     <button
       type='button'
       aria-label={isPencilIconVisibility ? 'Создать новый чат' : 'Закрыть'}
-      className={`${className} bg-[var(--blue)] rounded-[50%] p-2 w-13.5 h-13.5 flex items-center justify-center hover:bg-[var(--dark-blue)] cursor-pointer `}
+      className={`${className} bg-[var(--blue)] rounded-full p-2 w-13.5 h-13.5 flex items-center justify-center hover:bg-[var(--dark-blue)] cursor-pointer `}
       onClick={onClick}
     >
       <span className='relative block w-6 h-6'>

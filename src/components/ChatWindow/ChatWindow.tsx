@@ -23,6 +23,7 @@ interface ChatWindowProps {
   className?: string;
 }
 
+//TODO custom scrollbar
 const ChatWindow = ({ className = '' }: ChatWindowProps) => {
   const { chatList, currentChatId } = useChatContext();
 
@@ -35,7 +36,7 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
 
   const handleMessagesScroll = () => {
     const list = messagesContainerRef.current;
-    if (!list) {
+    if (!list || !chat) {
       return;
     }
 
@@ -54,13 +55,12 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
     const chatChanged = chatIdRef.current !== chat.chatId;
     chatIdRef.current = chat.chatId;
 
-    //TODO: добавить условие чтобы скроллилось при отправке нового сообщения
-    if (!chatChanged && !isNearBottomRef.current) {
-      return;
-    }
+    const lastMessage = chat.messages[chat.messages.length - 1];
 
-    list.scrollTop = list.scrollHeight;
-    isNearBottomRef.current = true;
+    if (chatChanged || isNearBottomRef.current || lastMessage?.isOutgoing) {
+      list.scrollTop = list.scrollHeight;
+      isNearBottomRef.current = true;
+    }
   }, [chat, chat?.chatId, chat?.messages.length]);
 
   return (
@@ -76,10 +76,13 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
           <header className='flex items-center gap-3 p-1 rounded-4xl bg-white'>
             <UserAvatar className='w-10 h-10' />
             <h2 className='truncate text-base font-medium text-gray-900'>
-              {chat.username}{' '}
-              <span className='text-sm text-gray-400'>
-                (+{chat.phoneNumber})
-              </span>
+              {chat.username}
+              {chat.phoneNumber && (
+                <span className='text-sm text-gray-400'>
+                  {' '}
+                  (+{chat.phoneNumber})
+                </span>
+              )}
             </h2>
           </header>
 

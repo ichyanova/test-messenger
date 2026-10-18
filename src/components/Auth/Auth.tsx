@@ -16,14 +16,14 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
     const { isSuccess, errorMessage } = await auth(
-      idInstance,
-      apiTokenInstance,
+      idInstance.trim(),
+      apiTokenInstance.trim(),
     );
     if (!isSuccess) {
       setError(errorMessage);
@@ -45,36 +45,32 @@ export default function Auth() {
           onSubmit={handleSubmit}
           className='w-full space-y-4'
         >
-          {/* Поле idInstance */}
           <Input
             id='idInstance'
             label='idInstance'
             placeholder='ID'
             value={idInstance}
-            onChange={(e) => setIdInstance(e.target.value.trim())}
+            onChange={(e) => setIdInstance(e.target.value)}
             disabled={isLoading}
             required
           />
 
-          {/* Поле apiTokenInstance */}
           <Input
             id='apiTokenInstance'
             label='apiTokenInstance'
             placeholder='API токен'
             value={apiTokenInstance}
-            onChange={(e) => setApiTokenInstance(e.target.value.trim())}
+            onChange={(e) => setApiTokenInstance(e.target.value)}
             disabled={isLoading}
             required
           />
 
-          {/* Сообщение об ошибке */}
           {error && (
             <div className='bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl p-3 text-center'>
               {error}
             </div>
           )}
 
-          {/* Кнопка отправки */}
           <Button
             type='submit'
             disabled={isLoading}
