@@ -23,7 +23,6 @@ interface ChatWindowProps {
   className?: string;
 }
 
-//TODO custom scrollbar
 const ChatWindow = ({ className = '' }: ChatWindowProps) => {
   const { chatList, currentChatId } = useChatContext();
 
@@ -77,11 +76,13 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
             <UserAvatar className='w-10 h-10' />
             <h2 className='truncate text-base font-medium text-gray-900'>
               {chat.username}
-              {chat.phoneNumber && (
+              {chat.phoneNumber ? (
                 <span className='text-sm text-gray-400'>
                   {' '}
                   (+{chat.phoneNumber})
                 </span>
+              ) : (
+                ''
               )}
             </h2>
           </header>
@@ -89,7 +90,7 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
           <div
             ref={messagesContainerRef}
             onScroll={handleMessagesScroll}
-            className='flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-1 py-4'
+            className='custom-scrollbar flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-1 py-4'
           >
             {chat.messages.length === 0 && (
               <div className='flex flex-1 items-center justify-center text-center text-sm'>

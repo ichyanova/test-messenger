@@ -22,7 +22,7 @@ const Textarea = ({
     <textarea
       ref={ref}
       rows={1}
-      className={`${className} field-sizing-content max-h-40 min-w-0 flex-1 resize-none overflow-y-auto text-sm outline-none placeholder:text-gray-300`}
+      className={`${className} custom-scrollbar field-sizing-content max-h-40 min-w-0 flex-1 resize-none overflow-y-auto text-sm outline-none placeholder:text-gray-300`}
       value={value}
       {...textareaProps}
     />

@@ -5,8 +5,6 @@
 import UserAvatar from '@/components/UI/UserAvatar/UserAvatar';
 import { useChatContext } from '@/context/use-chat-context';
 
-//TODO custom scrollbar
-
 interface ChatListProps {
   className?: string;
 }
@@ -25,7 +23,7 @@ const ChatList = ({ className = '' }: ChatListProps) => {
   const isActiveChat = (chatId: string) => chatId === currentChatId;
 
   return (
-    <ul className={`${className} overflow-y-auto pb-20`}>
+    <ul className={`${className} custom-scrollbar overflow-y-auto pb-20`}>
       {chatList.map((chat) => {
         const isActive = isActiveChat(chat.chatId);
         return (
