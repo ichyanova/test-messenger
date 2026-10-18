@@ -8,7 +8,7 @@ const App = () => {
 
   return (
     <div className='tg-bg'>
-      <div className='tg-content font-sans gap-2'>
+      <div className='tg-content font-sans'>
         {!isAuth ? <Auth /> : <Chat />}
       </div>
     </div>

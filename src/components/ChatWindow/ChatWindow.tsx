@@ -8,10 +8,10 @@ import { useLayoutEffect, useRef } from 'react';
 
 import type { ChatInfo } from '@/types/chat.types';
 
-import UserAvatar from '@/components/UI/UserAvatar/UserAvatar';
 import Hint from './Hint/Hint';
 import NewMessage from './NewMessage/NewMessage';
 import { useChatContext } from '@/context/use-chat-context';
+import Header from './Header/Header';
 
 const SCROLL_BOTTOM_THRESHOLD_PX = 48;
 
@@ -42,7 +42,7 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
     isNearBottomRef.current = isNearBottom(list);
   };
 
-  // Прокрутка вниз, если лента уже у нижнего края или открыт другой чат
+  // Прокрутка вниз, если отправили новое сообщение или открыли другой чат
   useLayoutEffect(() => {
     const list = messagesContainerRef.current;
     if (!list || !chat) {
@@ -65,27 +65,14 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
   return (
     <div className={`${className} flex h-full w-full flex-col overflow-hidden`}>
       {!chat && (
-        <div className='flex flex-1 items-center justify-center text-center text-sm'>
+        <div className='flex flex-1 items-center justify-center text-sm'>
           <Hint>Выберите чат или создайте новый по&nbsp;номеру телефона</Hint>
         </div>
       )}
 
       {chat && (
         <>
-          <header className='flex items-center gap-3 p-1 rounded-4xl bg-white'>
-            <UserAvatar className='w-10 h-10' />
-            <h2 className='truncate text-base font-medium text-gray-900'>
-              {chat.username}
-              {chat.phoneNumber ? (
-                <span className='text-sm text-gray-400'>
-                  {' '}
-                  (+{chat.phoneNumber})
-                </span>
-              ) : (
-                ''
-              )}
-            </h2>
-          </header>
+          <Header className='mb-1' />
 
           <div
             ref={messagesContainerRef}
@@ -125,7 +112,7 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
 
           <NewMessage
             key={chat.chatId}
-            className='mt-2 shrink-0'
+            className='mt-1 shrink-0'
           />
         </>
       )}

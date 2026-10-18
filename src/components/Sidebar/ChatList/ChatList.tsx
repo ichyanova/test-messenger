@@ -36,27 +36,27 @@ const ChatList = ({ className = '' }: ChatListProps) => {
               onClick={() => setCurrentChatId(chat.chatId)}
               aria-current={isActive ? 'true' : undefined}
               className={`flex w-full items-center gap-3 p-2 text-left rounded-2xl transition-colors cursor-pointer ${
-                isActive ? 'bg-[var(--blue)] text-white' : 'hover:bg-gray-100'
+                isActive
+                  ? 'bg-[var(--blue)] text-white'
+                  : 'hover:bg-gray-100 text-gray-900'
               }`}
             >
               <UserAvatar className='w-13.5 h-13.5' />
               <span className='min-w-0 flex-1'>
                 <span className='flex w-full gap-2 justify-between pb-1 items-center'>
-                  <span
-                    className={`min-w-0 flex-1 truncate text-base font-medium ${isActive ? 'text-white' : 'text-gray-900'}`}
-                  >
+                  <span className='min-w-0 flex-1 truncate text-base font-medium'>
                     {chat.username}
                   </span>
                   {chat.lastMessageTime && (
                     <span
-                      className={`shrink-0 text-xs ${isActive ? 'text-white' : 'text-gray-400'}`}
+                      className={`shrink-0 text-xs ${isActive ? '' : 'text-gray-400'}`}
                     >
                       {chat.lastMessageTime}
                     </span>
                   )}
                 </span>
                 <span
-                  className={`block truncate text-sm ${isActive ? 'text-white' : 'text-gray-500'}`}
+                  className={`block truncate text-sm ${isActive ? '' : 'text-gray-500'}`}
                 >
                   {chat.lastMessage || 'Нет сообщений'}
                 </span>

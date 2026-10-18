@@ -27,7 +27,7 @@ const Sidebar = ({ className = '' }: SidebarProps) => {
 
   return (
     <div
-      className={`${className} relative flex h-full w-full flex-col overflow-hidden rounded-3xl bg-white`}
+      className={`${className} relative flex h-full w-full flex-col overflow-hidden sm:rounded-3xl bg-white`}
     >
       <div className='flex items-center shrink-0 px-2 min-h-[56px]'>
         {isVisiblePhoneInput ? (

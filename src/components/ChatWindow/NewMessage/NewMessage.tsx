@@ -68,9 +68,9 @@ const NewMessage = ({ className = '' }: NewMessageProps) => {
       className={`${className} flex items-end gap-2 rounded-3xl bg-white p-1`}
       onSubmit={handleSubmit}
     >
-      <div className='flex flex-col flex-1 pl-4'>
+      <div className='flex flex-col flex-1 min-w-0 pl-4'>
         <Textarea
-          className='min-w-0 w-full py-2'
+          className='w-full py-2'
           ref={textareaRef}
           name='message'
           placeholder='Сообщение'
