@@ -12,6 +12,7 @@ import Hint from './Hint/Hint';
 import NewMessage from './NewMessage/NewMessage';
 import { useChatContext } from '@/context/use-chat-context';
 import Header from './Header/Header';
+import MessageBubble from './MessageBubble/MessageBubble';
 
 const SCROLL_BOTTOM_THRESHOLD_PX = 48;
 
@@ -63,7 +64,7 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
   }, [chat, chat?.chatId, chat?.messages.length]);
 
   return (
-    <div className={`${className} flex h-full w-full flex-col overflow-hidden`}>
+    <div className={`${className} flex h-full w-full flex-col`}>
       {!chat && (
         <div className='flex flex-1 items-center justify-center text-sm'>
           <Hint>Выберите чат или создайте новый по&nbsp;номеру телефона</Hint>
@@ -72,12 +73,12 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
 
       {chat && (
         <>
-          <Header className='mb-1' />
+          <Header className='mb-1 mx-4' />
 
           <div
             ref={messagesContainerRef}
             onScroll={handleMessagesScroll}
-            className='custom-scrollbar flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-1 py-4'
+            className='custom-scrollbar flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto mx-1 px-4 py-4'
           >
             {chat.messages.length === 0 && (
               <div className='flex flex-1 items-center justify-center text-center text-sm'>
@@ -86,33 +87,16 @@ const ChatWindow = ({ className = '' }: ChatWindowProps) => {
             )}
 
             {chat.messages.map((message) => (
-              <div
+              <MessageBubble
                 key={message.id}
-                className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
-                  message.isOutgoing
-                    ? 'self-end bg-[var(--message-outgoing-bg)]'
-                    : 'self-start bg-white'
-                }`}
-              >
-                <p className='wrap-break-word whitespace-pre-wrap'>
-                  {message.message}
-                </p>
-                <p
-                  className={`mt-1 text-right text-[10px] ${
-                    message.isOutgoing
-                      ? 'text-[var(--message-out-time-color)]'
-                      : 'text-gray-400'
-                  }`}
-                >
-                  {message.time}
-                </p>
-              </div>
+                message={message}
+              />
             ))}
           </div>
 
           <NewMessage
             key={chat.chatId}
-            className='mt-1 shrink-0'
+            className='mt-1 mx-4 shrink-0'
           />
         </>
       )}

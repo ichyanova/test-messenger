@@ -1,0 +1,62 @@
+/**
+ * Стили сообщения с использованием CSS переменных Tailwind
+ * TODO: не показывать хвост бабла, если сообщение не последнее в чате
+ */
+
+
+.message-bubble {
+  position: relative;
+  max-width: 75%;
+  align-self: flex-start;
+  border-radius: var(--radius-2xl) var(--radius-2xl) var(--radius-2xl) 0;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+  background-color: var(--color-white);
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: -10px;
+    width: 10px;
+    height: 20px;
+    background-color: var(--color-white);
+    clip-path: path('M 10 0 Q 10 11 2 18 Q 0 20 3 20 L 10 20 Z');
+  }
+
+  .message-text {
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .message-time {
+    margin-top: var(--spacing);
+    text-align: right;
+    font-size: 10px;
+    color: var(--color-gray-400);
+  }
+
+  &[data-outgoing='true'] {
+    align-self: flex-end;
+    background-color: var(--message-outgoing-bg);
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 var(--radius-2xl);
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: auto;
+      right: -10px;
+      width: 10px;
+      height: 20px;
+      background-color: var(--message-outgoing-bg);
+      clip-path: path('M 0 0 Q 0 11 8 18 Q 10 20 7 20 L 0 20 Z');
+    }
+
+    .message-time {
+      color: var(--message-out-time-color);
+    }
+  }
+}

@@ -17,12 +17,12 @@ const Chat = ({ className = '' }: ChatProps) => {
   return (
     <div className={`${className} flex h-full w-full min-h-0`}>
       <div
-        className={`h-full w-full shrink-0 flex-col sm:p-4 sm:w-96 ${currentChatId ? 'hidden sm:flex' : 'flex'}`}
+        className={`h-full w-full shrink-0 flex-col sm:p-4 sm:pr-0 sm:w-96 ${currentChatId ? 'hidden sm:flex' : 'flex'}`}
       >
         <Sidebar />
       </div>
       <div
-        className={`h-full min-w-0 flex-1 flex-col p-4 sm:pl-0 ${currentChatId ? 'flex' : 'hidden sm:flex'}`}
+        className={`h-full min-w-0 flex-1 flex-col py-4 ${currentChatId ? 'flex' : 'hidden sm:flex'}`}
       >
         <ChatWindow />
       </div>
