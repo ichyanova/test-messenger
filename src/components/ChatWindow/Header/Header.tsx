@@ -28,7 +28,7 @@ const Header = ({ className = '' }: HeaderProps) => {
     >
       <button
         type='button'
-        className='p-1 sm:hidden'
+        className='p-1 md:hidden'
         onClick={() => {
           setCurrentChatId(null);
         }}

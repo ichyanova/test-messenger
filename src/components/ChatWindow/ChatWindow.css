@@ -1,0 +1,30 @@
+.chat-window {
+  --chat-width: calc(100% - 48px);
+
+  @media (min-width: 1200px) {
+    --chat-width: 696px;
+  }
+}
+
+.chat-list {
+  --padding-right: var(--spacing);
+  --padding-left: calc(4 * (var(--spacing)));
+  --chat-list-width: calc(var(--chat-width) + (var(--padding-right) + var(--padding-left)));
+
+  @media (min-width: 1200px) {
+    --chat-list-width: var(--chat-width);
+  }
+
+  padding: 0 var(--padding-right) 0 var(--padding-left);
+
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0%,
+    black 66px,
+    black calc(100% - 66px),
+    transparent 100%);
+  mask-image: linear-gradient(to bottom,
+    transparent 0%,
+    black 66px,
+    black calc(100% - 66px),
+    transparent 100%);
+}
